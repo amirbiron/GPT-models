@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מדריך מודלי בינה מלאכותית של OpenAI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            color: #666;
+        }
+
+        .models-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .model-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-right: 5px solid;
+        }
+
+        .model-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .gpt4o { border-color: #3498db; }
+        .gpt45 { border-color: #e74c3c; }
+        .o4mini { border-color: #f39c12; }
+        .o4mini-high { border-color: #9b59b6; }
+        .o3 { border-color: #2ecc71; }
+        .o1pro { border-color: #34495e; }
+
+        .model-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .model-icon {
+            font-size: 2em;
+            margin-left: 15px;
+        }
+
+        .model-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .model-subtitle {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .capabilities {
+            margin: 20px 0;
+        }
+
+        .capabilities h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .capability-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+
+        .use-cases {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .use-cases ul {
+            list-style: none;
+        }
+
+        .use-cases li {
+            padding: 5px 0;
+            position: relative;
+            padding-right: 20px;
+        }
+
+        .use-cases li:before {
+            content: "✓";
+            color: #27ae60;
+            font-weight: bold;
+            position: absolute;
+            right: 0;
+        }
+
+        .comparison-table {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            margin-top: 40px;
+        }
+
+        .comparison-table h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .stars {
+            color: #f39c12;
+            font-size: 1.1em;
+        }
+
+        .quick-guide {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .quick-guide h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .quick-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .quick-option {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .models-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 מדריך מודלי הבינה המלאכותית של OpenAI</h1>
+            <p>למד איך לבחור את המודל המתאים בדיוק לצרכים שלך</p>
+        </div>
+
+        <div class="models-grid">
+            <!-- GPT-4o -->
+            <div class="model-card gpt4o">
+                <div class="model-header">
+                    <div>
+                        <div class="model-title">GPT-4o</div>
+                        <div class="model-subtitle">המודל הכללי לכל יום</div>
+                    </div>
+                    <div class="model-icon">🎯</div>
+                </div>
+                
+                <div class="capabilities">
+                    <h4>מה הוא יודע לעשות:</h4>
+                    <div class="capability-tags">
+                        <span class="tag">עבודה עם תמונות</span>
+                        <span class="tag">שיחות טבעיות</span>
+                        <span class="tag">ניתוח מסמכים</span>
+                        <span class="tag">כתיבה יצירתית</span>
+                    </div>
+                </div>
+
+                <div class="use-cases">
+                    <h4>מתי להשתמש בו:</h4>
+                    <ul>
+                        <li>סיכום ישיבות ומיילים</li>
+                        <li>יצירת תוכן למדיה חברתית</li>
+                        <li>ניתוח נתונים וגרפים</li>
+                        <li>שיחות כלליות וייעוץ</li>
+                        <li>עבודה עם קבצי אופיס</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- GPT-4.5 -->
+            <div class="model-card gpt45">
+                <div class="model-header">
+                    <div>
+                        <div class="model-title">GPT-4.5</div>
+                        <div class="model-subtitle">המומחה ליצירתיות ורגש</div>
+                    </div>
+                    <div class="model-icon">❤️</div>
+                </div>
+                
+                <div class="capabilities">
+                    <h4>מה הוא יודע לעשות:</h4>
+                    <div class="capability-tags">
+                        <span class="tag">כתיבה רגשית</span>
+                        <span class="tag">תוכן שיווקי</span>
+                        <span class="tag">סגנון טבעי</span>
+                        <span class="tag">אמפתיה</span>
+                    </div>
+                </div>
+
+                <div class="use-cases">
+                    <h4>מתי להשתמש בו:</h4>
+                    <ul>
+                        <li>כתיבת פוסטים אישיים ומעניינים</li>
+                        <li>יצירת קמפיינים שיווקיים</li>
+                        <li>מכתבים אישיים והתנצלויות</li>
+                        <li>תוכן יצירתי וסיפורים</li>
+                        <li>הודעות עם נגיעה אנושית</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- o4-mini -->
+            <div class="model-card o4mini">
+                <div class="model-header">
+                    <div>
+                        <div class="model-title">o4-mini</div>
+                        <div class="model-subtitle">מהיר וטכני לעבודות קטנות</div>
+                    </div>
+                    <div class="model-icon">⚡</div>
+                </div>
+                
+                <div class="capabilities">
+                    <h4>מה הוא יודע לעשות:</h4>
+                    <div class="capability-tags">
+                        <span class="tag">תכנות מהיר</span>
+                        <span class="tag">חישובים</span>
+                        <span class="tag">חסכוני</span>
+                        <span class="tag">עיבוד נתונים</span>
+                    </div>
+                </div>
+
+                <div class="use-cases">
+                    <h4>מתי להשתמש בו:</h4>
+                    <ul>
+                        <li>תיקון קוד מהיר</li>
+                        <li>סיכום מסמכים קצרים</li>
+                        <li>חישובים מתמטיים בסיסיים</li>
+                        <li>עיבוד קבצי נתונים קטנים</li>
+                        <li>משימות STEM פשוטות</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- o4-mini-high -->
+            <div class="model-card o4mini-high">
+                <div class="model-header">
+                    <div>
+                        <div class="model-title">o4-mini-high</div>
+                        <div class="model-subtitle">עומק טכני אמיתי</div>
+                    </div>
+                    <div class="model-icon">🎯</div>
+                </div>
+                
+                <div class="capabilities">
+                    <h4>מה הוא יודע לעשות:</h4>
+                    <div class="capability-tags">
+                        <span class="tag">מתמטיקה מתקדמת</span>
+                        <span class="tag">תכנות מורכב</span>
+                        <span class="tag">הסברים מדעיים</span>
+                        <span class="tag">דיוק גבוה</span>
+                    </div>
+                </div>
+
+                <div class="use-cases">
+                    <h4>מתי להשתמש בו:</h4>
+                    <ul>
+                        <li>פתרון משוואות מורכבות</li>
+                        <li>פיתוח אלגוריתמים</li>
+                        <li>ניתוח מסדי נתונים</li>
+                        <li>הסבר מושגים מדעיים מתקדמים</li>
+                        <li>תכנות ברמה גבוהה</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- o3 -->
+            <div class="model-card o3">
+                <div class="model-header">
+                    <div>
+                        <div class="model-title">o3</div>
+                        <div class="model-subtitle">לפרויקטים מורכבים ואסטרטגיה</div>
+                    </div>
+                    <div class="model-icon">♞</div>
+                </div>
+                
+                <div class="capabilities">
+                    <h4>מה הוא יודע לעשות:</h4>
+                    <div class="capability-tags">
+                        <span class="tag">אסטרטגיה עסקית</span>
+                        <span class="tag">תכנון פרויקטים</span>
+                        <span class="tag">ניתוח רב-שכבתי</span>
+                        <span class="tag">חיזוי מגמות</span>
+                    </div>
+                </div>
+
+                <div class="use-cases">
+                    <h4>מתי להשתמש בו:</h4>
+                    <ul>
+                        <li>תכנון אסטרטגיה עסקית</li>
+                        <li>ניתוח סיכונים והזדמנויות</li>
+                        <li>מחקר שוק מעמיק</li>
+                        <li>תכנון פרויקטים מורכבים</li>
+                        <li>ניתוח נתונים רב-מימדי</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- o1-pro -->
+            <div class="model-card o1pro">
+                <div class="model-header">
+                    <div>
+                        <div class="model-title">o1-pro</div>
+                        <div class="model-subtitle">המומחה לעבודות מחקר מעמיקות</div>
+                    </div>
+                    <div class="model-icon">🔬</div>
+                </div>
+                
+                <div class="capabilities">
+                    <h4>מה הוא יודע לעשות:</h4>
+                    <div class="capability-tags">
+                        <span class="tag">חשיבה מעמיקה</span>
+                        <span class="tag">דיוק מרבי</span>
+                        <span class="tag">מסמכים ארוכים</span>
+                        <span class="tag">מחקר אקדמי</span>
+                    </div>
+                </div>
+
+                <div class="use-cases">
+                    <h4>מתי להשתמש בו:</h4>
+                    <ul>
+                        <li>כתיבת מחקרים אקדמיים</li>
+                        <li>ניתוח מסמכים ארוכים ומורכבים</li>
+                        <li>פיתוח מודלים תיאורטיים</li>
+                        <li>עבודות הדורשות דיוק מרבי</li>
+                        <li>ייעוץ מקצועי מתמחה</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="comparison-table">
+            <h2>📊 השוואה מהירה בין המודלים</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>מודל</th>
+                        <th>החוזק העיקרי</th>
+                        <th>מהירות תגובה</th>
+                        <th>מתאים למי</th>
+                        <th>דירוג כללי</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>GPT-4o</strong></td>
+                        <td>רב-תכליתי וידידותי</td>
+                        <td>מהיר</td>
+                        <td>משתמש כללי</td>
+                        <td><span class="stars">★★★★★</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>GPT-4.5</strong></td>
+                        <td>יצירתיות ורגש</td>
+                        <td>מהיר-בינוני</td>
+                        <td>יוצרי תוכן</td>
+                        <td><span class="stars">★★★★★</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>o4-mini</strong></td>
+                        <td>מהירות וחיסכון</td>
+                        <td>מהיר מאוד</td>
+                        <td>מתכנתים מתחילים</td>
+                        <td><span class="stars">★★★★☆</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>o4-mini-high</strong></td>
+                        <td>דיוק טכני</td>
+                        <td>בינוני</td>
+                        <td>אנשי טכנולוגיה</td>
+                        <td><span class="stars">★★★★★</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>o3</strong></td>
+                        <td>אסטרטגיה מורכבת</td>
+                        <td>בינוני</td>
+                        <td>אנשי עסקים</td>
+                        <td><span class="stars">★★★★★</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>o1-pro</strong></td>
+                        <td>עומק וחדקר</td>
+                        <td>איטי (מעמיק)</td>
+                        <td>חוקרים ואקדמאים</td>
+                        <td><span class="stars">★★★★★</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="quick-guide">
+            <h2>🚀 בחירה מהירה לפי הצורך שלך</h2>
+            <div class="quick-options">
+                <div class="quick-option">
+                    <strong>עבודה יומיומית</strong><br>
+                    → GPT-4o
+                </div>
+                <div class="quick-option">
+                    <strong>יצירת תוכן</strong><br>
+                    → GPT-4.5
+                </div>
+                <div class="quick-option">
+                    <strong>תכנות מהיר</strong><br>
+                    → o4-mini
+                </div>
+                <div class="quick-option">
+                    <strong>פרויקט טכני</strong><br>
+                    → o4-mini-high
+                </div>
+                <div class="quick-option">
+                    <strong>אסטרטגיה עסקית</strong><br>
+                    → o3
+                </div>
+                <div class="quick-option">
+                    <strong>מחקר מעמיק</strong><br>
+                    → o1-pro
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
